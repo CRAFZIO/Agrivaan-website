@@ -282,7 +282,7 @@ if (typeof Swiper !== 'undefined') {
             slidesPerView: 1.2,
             spaceBetween: 16,
             loop: true,
-            speed: 2000,
+            speed: 1200,
             freeMode: {
                 enabled: true,
                 momentum: false,
