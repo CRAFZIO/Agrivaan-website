@@ -63,16 +63,7 @@
             <img id="loader-logo" src="assets/images/logo/logo.png" alt="Agrivaan Logo"
                 class="w-48 sm:w-56 lg:w-64 h-auto mix-blend-multiply transition-all duration-[1200ms] cubic-bezier(0.7, 0, 0.3, 1)">
         </div>
-        <div class="flex flex-col items-center relative z-10 mb-6">
-            <svg class="animate-spin h-10 w-10 text-[#1a4421] mb-4" xmlns="http://www.w3.org/2000/svg" fill="none"
-                viewBox="0 0 24 24">
-                <circle class="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>
-                <path class="opacity-80" fill="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                </path>
-            </svg>
-            <span class="text-[#1a4421] font-bold text-lg tracking-wide">Loading...</span>
-        </div>
+
     </div>
 
     <!-- Header / Navbar -->
@@ -235,7 +226,7 @@
                     <div
                         class="relative reveal-right order-1 lg:order-2 px-4 lg:px-0 mb-8 lg:mb-0 h-full min-h-[400px]">
                         <div class="relative z-10 rounded-3xl lg:rounded-4xl overflow-hidden shadow-2xl h-full">
-                            <video id="about-video" src="assets/videos/video.mp4" muted loop playsinline
+                            <video id="about-video" src="assets/videos/video.mp4" loop playsinline
                                 class="w-full h-full object-cover"></video>
                         </div>
                     </div>
@@ -487,7 +478,7 @@
                 </div>
             </div>
 
-            <div class="w-full relative reveal-scale px-4 lg:px-12">
+            <div class="container mx-auto relative reveal-scale px-6 lg:px-12">
                 <!-- Swiper -->
                 <div class="swiper gallerySwiper pb-12 cursor-grab active:cursor-grabbing">
                     <div class="swiper-wrapper">
@@ -607,7 +598,7 @@
                         <p class="text-gray-600 mb-6 italic">"Agrivaan has completely changed how I sell my produce. I
                             get better prices and don't have to worry about transport anymore."</p>
                         <div class="font-bold text-lg">Rajesh Kumar</div>
-                        <div class="text-sm text-primary">Farmer, Maharashtra</div>
+                        <div class="text-sm text-primary">Farmer, Tumkur, Karnataka</div>
                     </div>
                     <div class="bg-white p-8 rounded-4xl shadow-sm reveal-up" style="transition-delay: 0.1s">
                         <div class="flex text-yellow-400 mb-4">
@@ -858,7 +849,7 @@
                                     class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                             </div>
                             <div>
-                                <h4 class="text-xl font-bold text-gray-900">Anand S G</h4>
+                                <h4 class="text-xl font-bold text-gray-900">Ananda S G</h4>
                                 <div class="text-primary text-sm font-medium">Partner</div>
                             </div>
                         </div>
@@ -871,7 +862,7 @@
                                     class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                             </div>
                             <div>
-                                <h4 class="text-xl font-bold text-gray-900">Rajesh</h4>
+                                <h4 class="text-xl font-bold text-gray-900">Rajesh R G</h4>
                                 <div class="text-primary text-sm font-medium">Partner</div>
                             </div>
                         </div>
@@ -889,11 +880,12 @@
                                     <div
                                         class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
                                         <div
-                                            class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xl overflow-hidden flex-shrink-0">
-                                            D
+                                            class="w-16 h-16 rounded-full ring-2 ring-primary/10 overflow-hidden flex-shrink-0">
+                                            <img src="assets/images/team/darshan.jpeg" alt="Darshan A B"
+                                                class="w-full h-full object-cover">
                                         </div>
                                         <div>
-                                            <h4 class="font-bold text-gray-800">Darshan</h4>
+                                            <h4 class="font-bold text-gray-800">Darshan A B</h4>
                                             <div class="text-sm text-primary">Tech Lead</div>
                                         </div>
                                     </div>
@@ -903,12 +895,13 @@
                                     <div
                                         class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
                                         <div
-                                            class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xl overflow-hidden flex-shrink-0">
-                                            C
+                                            class="w-16 h-16 rounded-full ring-2 ring-primary/10 overflow-hidden flex-shrink-0">
+                                            <img src="assets/images/team/chethan.png" alt="Chethan S"
+                                                class="w-full h-full object-cover">
                                         </div>
                                         <div>
-                                            <h4 class="font-bold text-gray-800">Chetan</h4>
-                                            <div class="text-sm text-primary">Senior Developer</div>
+                                            <h4 class="font-bold text-gray-800">Chethan S</h4>
+                                            <div class="text-sm text-primary">Full-Stack Developer</div>
                                         </div>
                                     </div>
                                 </div>
@@ -939,8 +932,10 @@
         <div class="container mx-auto px-6 lg:px-12">
             <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
                 <div class="space-y-6">
-                    <div class="flex items-center gap-2">
-                        <img src="assets/images/logo/logo.png" alt="Agrivaan Logo" class="h-32 w-auto brightness-0 invert opacity-90">
+                    <div class="flex flex-col gap-1">
+                        <span class="text-3xl font-extrabold tracking-widest text-white">AGRIVAAN</span>
+                        <span class="text-xs text-gray-400 font-medium tracking-wide">Smart Solutions for Smarter
+                            Farming</span>
                     </div>
                     <p class="text-gray-400">
                         India’s first all-in-one agriculture services platform. Organizing the sector digitally to

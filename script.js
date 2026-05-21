@@ -95,33 +95,48 @@ revealOnScroll(); // Initial check
 
 
 
-// About Section Video Autoplay
-const aboutSection = document.getElementById('about');
+// About Section Video Autoplay and Autostop
 const aboutVideo = document.getElementById('about-video');
-let videoPlayed = false;
 
-const checkAboutVideo = () => {
-    if (!aboutSection || !aboutVideo || videoPlayed) return;
+if (aboutVideo) {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                // Play with audio unmuted when it enters viewport
+                aboutVideo.muted = false;
+                aboutVideo.play().catch(err => {
+                    console.log("Autoplay with audio blocked, playing muted as fallback:", err);
+                    aboutVideo.muted = true;
+                    aboutVideo.play().catch(err2 => console.error("Playback failed:", err2));
+                });
+            } else {
+                // Pause video when scrolled out of viewport
+                aboutVideo.pause();
+            }
+        });
+    }, {
+        threshold: 0.25 // Triggers when 25% of the video is visible
+    });
 
-    const rect = aboutSection.getBoundingClientRect();
-    if (rect.top < window.innerHeight * 0.75) {
-        videoPlayed = true;
-        setTimeout(() => {
-            aboutVideo.play().catch(err => console.log("Video autoplay blocked:", err));
-        }, 3000);
-    }
-};
+    observer.observe(aboutVideo);
 
-if (aboutSection && aboutVideo) {
-    window.addEventListener('scroll', checkAboutVideo);
-    window.addEventListener('load', checkAboutVideo);
+    // Unmute on first user interaction if it was muted by autoplay rules
+    const unmuteOnInteraction = () => {
+        if (aboutVideo.muted && !aboutVideo.paused) {
+            aboutVideo.muted = false;
+        }
+        document.removeEventListener('click', unmuteOnInteraction);
+        document.removeEventListener('touchstart', unmuteOnInteraction);
+    };
+    document.addEventListener('click', unmuteOnInteraction);
+    document.addEventListener('touchstart', unmuteOnInteraction);
 }
 
 // Active Nav helper functions
 const updateActiveNav = (targetHref) => {
     const navLinks = document.querySelectorAll('.nav-link');
     const mobileMenuLinks = document.querySelectorAll('.mobile-link');
-    
+
     navLinks.forEach(link => {
         link.classList.toggle('active', link.getAttribute('href') === targetHref);
     });
@@ -264,10 +279,10 @@ let techTeamSwiper;
 if (typeof Swiper !== 'undefined') {
     if (document.querySelector('.gallerySwiper')) {
         gallerySwiper = new Swiper('.gallerySwiper', {
-            slidesPerView: 1.5,
+            slidesPerView: 1.2,
             spaceBetween: 16,
             loop: true,
-            speed: 4000,
+            speed: 2000,
             freeMode: {
                 enabled: true,
                 momentum: false,
@@ -283,9 +298,9 @@ if (typeof Swiper !== 'undefined') {
             },
             breakpoints: {
                 480: { slidesPerView: 2, spaceBetween: 20 },
-                768: { slidesPerView: 3, spaceBetween: 24 },
-                1024: { slidesPerView: 4, spaceBetween: 30 },
-                1280: { slidesPerView: 5, spaceBetween: 30 },
+                768: { slidesPerView: 3, spaceBetween: 28 },
+                1024: { slidesPerView: 3.5, spaceBetween: 32 },
+                1280: { slidesPerView: 4, spaceBetween: 40 },
             },
         });
     }
@@ -351,13 +366,13 @@ window.closeLightbox = () => {
 };
 
 window.prevLightboxImage = (e) => {
-    if(e) e.stopPropagation();
+    if (e) e.stopPropagation();
     currentLightboxIndex = (currentLightboxIndex - 1 + lightboxImages.length) % lightboxImages.length;
     updateLightboxImage();
 };
 
 window.nextLightboxImage = (e) => {
-    if(e) e.stopPropagation();
+    if (e) e.stopPropagation();
     currentLightboxIndex = (currentLightboxIndex + 1) % lightboxImages.length;
     updateLightboxImage();
 };
