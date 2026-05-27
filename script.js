@@ -248,27 +248,206 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Form Submission
+// --- EmailJS & Form Submission Logic ---
+// How EmailJS Works:
+// EmailJS is a client-side library that connects directly to the EmailJS APIs to send emails without a backend.
+// It parses form values by target element name attributes (e.g. name="user_name"), matches them with template parameters
+// in your EmailJS dashboard, and sends the compiled template to your designated email.
+//
+// Where to add EmailJS Keys:
+// 1. Initialized with Public Key: In index.html inside the script block initializing emailjs.
+// 2. Used in script.js: Replace the placeholders 'YOUR_SERVICE_ID' and 'YOUR_TEMPLATE_ID' inside the sendForm call.
+//
+// How to change destination email later:
+// You do NOT need to change your frontend code! Go to your EmailJS Dashboard -> Email Templates -> Edit your Template.
+// Under the "To Email" field of your Template, enter the destination email (e.g., contact@agrivaan.in).
+// Alternatively, if you want dynamic routing, you can add a hidden field in the HTML (e.g., <input type="hidden" name="to_email" value="contact@agrivaan.in">) 
+// and map it as {{to_email}} in the EmailJS Template dashboard.
+
 const contactForm = document.getElementById('contact-form');
+
 if (contactForm) {
+    const submitBtn = document.getElementById('submit-btn');
+    const btnText = document.getElementById('btn-text');
+    const btnSpinner = document.getElementById('btn-spinner');
+    const btnIcon = document.getElementById('btn-icon');
+
+    const nameInput = document.getElementById('user_name');
+    const phoneInput = document.getElementById('user_phone');
+    const emailInput = document.getElementById('user_email');
+    const subjectInput = document.getElementById('subject');
+    const messageInput = document.getElementById('message');
+
+    // Helper functions for custom field errors
+    const showError = (input, message) => {
+        const errorSpan = input.nextElementSibling;
+        if (errorSpan && errorSpan.classList.contains('error-message')) {
+            errorSpan.textContent = message;
+            errorSpan.classList.remove('hidden');
+        }
+        input.classList.remove('border-transparent', 'focus:border-primary/20');
+        input.classList.add('border-red-500', 'focus:border-red-500');
+    };
+
+    const clearError = (input) => {
+        const errorSpan = input.nextElementSibling;
+        if (errorSpan && errorSpan.classList.contains('error-message')) {
+            errorSpan.classList.add('hidden');
+            errorSpan.textContent = '';
+        }
+        input.classList.remove('border-red-500', 'focus:border-red-500');
+        input.classList.add('border-transparent', 'focus:border-primary/20');
+    };
+
+    // Attach input listeners to clear errors on typing
+    const formFields = [nameInput, phoneInput, emailInput, subjectInput, messageInput];
+    formFields.forEach(field => {
+        if (field) {
+            field.addEventListener('input', () => clearError(field));
+        }
+    });
+
+    // Custom dialog notification popup
+    const showNotification = (isSuccess, title, message) => {
+        const modal = document.getElementById('contact-notification');
+        const iconContainer = document.getElementById('notification-icon-container');
+        const icon = document.getElementById('notification-icon');
+        const titleEl = document.getElementById('notification-title');
+        const msgEl = document.getElementById('notification-message');
+        const closeBtn = document.getElementById('notification-close-btn');
+
+        if (!modal || !iconContainer || !icon || !titleEl || !msgEl || !closeBtn) return;
+
+        // Reset classes
+        iconContainer.className = 'w-16 h-16 rounded-full flex items-center justify-center mb-6';
+        closeBtn.className = 'w-full py-4 rounded-2xl font-bold text-white shadow-lg transition-all active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-2';
+        
+        if (isSuccess) {
+            iconContainer.classList.add('bg-green-100', 'text-green-600');
+            icon.setAttribute('data-lucide', 'check-circle');
+            closeBtn.classList.add('bg-gradient-to-r', 'from-primary', 'to-secondary', 'focus:ring-primary');
+            titleEl.className = 'text-2xl font-bold text-primary mb-2';
+        } else {
+            iconContainer.classList.add('bg-red-100', 'text-red-600');
+            icon.setAttribute('data-lucide', 'alert-circle');
+            closeBtn.classList.add('bg-red-500', 'hover:bg-red-600', 'focus:ring-red-500');
+            titleEl.className = 'text-2xl font-bold text-red-600 mb-2';
+        }
+
+        titleEl.textContent = title;
+        msgEl.textContent = message;
+
+        // Render Lucide icon inside modal dynamically
+        if (window.lucide) {
+            window.lucide.createIcons();
+        }
+
+        // Display modal
+        modal.classList.remove('opacity-0', 'pointer-events-none');
+        modal.querySelector('.relative').classList.remove('scale-95');
+        modal.querySelector('.relative').classList.add('scale-100');
+        document.body.style.overflow = 'hidden';
+
+        const closeModal = () => {
+            modal.querySelector('.relative').classList.remove('scale-100');
+            modal.querySelector('.relative').classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('opacity-0', 'pointer-events-none');
+                document.body.style.overflow = 'auto';
+            }, 300);
+            closeBtn.removeEventListener('click', closeModal);
+        };
+
+        closeBtn.addEventListener('click', closeModal);
+    };
+
     contactForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        const btn = contactForm.querySelector('button');
-        const originalText = btn.innerText;
-        btn.innerText = 'Sending...';
-        btn.disabled = true;
+        let isValid = true;
 
-        setTimeout(() => {
-            btn.innerText = 'Message Sent Successfully!';
-            btn.classList.add('bg-green-600');
-            contactForm.reset();
+        // 1. Validate Full Name
+        if (!nameInput.value.trim()) {
+            showError(nameInput, 'Full Name is required');
+            isValid = false;
+        } else {
+            clearError(nameInput);
+        }
 
-            setTimeout(() => {
-                btn.innerText = originalText;
-                btn.classList.remove('bg-green-600');
-                btn.disabled = false;
-            }, 3000);
-        }, 1500);
+        // 2. Validate Phone Number (Indian/International digit validations)
+        const phoneValue = phoneInput.value.trim();
+        const phoneRegex = /^\+?[0-9\s\-()]{10,20}$/;
+        if (!phoneValue) {
+            showError(phoneInput, 'Phone Number is required');
+            isValid = false;
+        } else if (!phoneRegex.test(phoneValue)) {
+            showError(phoneInput, 'Please enter a valid phone number (at least 10 digits)');
+            isValid = false;
+        } else {
+            clearError(phoneInput);
+        }
+
+        // 3. Validate Email Address
+        const emailValue = emailInput.value.trim();
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailValue) {
+            showError(emailInput, 'Email Address is required');
+            isValid = false;
+        } else if (!emailRegex.test(emailValue)) {
+            showError(emailInput, 'Please enter a valid email address');
+            isValid = false;
+        } else {
+            clearError(emailInput);
+        }
+
+        // 4. Validate Subject
+        if (!subjectInput.value.trim()) {
+            showError(subjectInput, 'Subject is required');
+            isValid = false;
+        } else {
+            clearError(subjectInput);
+        }
+
+        // 5. Validate Message
+        if (!messageInput.value.trim()) {
+            showError(messageInput, 'Message is required');
+            isValid = false;
+        } else {
+            clearError(messageInput);
+        }
+
+        // Stop submission if form is invalid
+        if (!isValid) return;
+
+        // Toggle Loading UI State
+        btnText.textContent = 'Sending...';
+        btnSpinner.classList.remove('hidden');
+        btnIcon.classList.add('hidden');
+        submitBtn.disabled = true;
+
+        // Use EmailJS sendForm integration
+        // Replace 'YOUR_SERVICE_ID' and 'YOUR_TEMPLATE_ID' with actual EmailJS Dashboard variables.
+        emailjs.sendForm('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', contactForm)
+            .then(() => {
+                // Success state
+                showNotification(true, 'Message Sent!', 'Your message has been sent successfully. We will get back to you shortly.');
+                contactForm.reset();
+            })
+            .catch((error) => {
+                // Error state
+                console.error('EmailJS Error:', error);
+                showNotification(
+                    false, 
+                    'Failed to Send', 
+                    `We encountered an error while sending your message. Please try again later. (Details: ${error?.text || error?.message || 'Unknown error'})`
+                );
+            })
+            .finally(() => {
+                // Reset submit button state
+                btnText.textContent = 'Send Message';
+                btnSpinner.classList.add('hidden');
+                btnIcon.classList.remove('hidden');
+                submitBtn.disabled = false;
+            });
     });
 }
 
