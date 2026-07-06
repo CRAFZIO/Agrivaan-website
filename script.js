@@ -471,16 +471,47 @@ if (typeof Swiper !== 'undefined') {
                 disableOnInteraction: false,
                 pauseOnMouseEnter: true,
             },
-            navigation: {
-                nextEl: '.gallery-next',
-                prevEl: '.gallery-prev',
-            },
             breakpoints: {
                 480: { slidesPerView: 2, spaceBetween: 20 },
                 768: { slidesPerView: 3, spaceBetween: 28 },
                 1024: { slidesPerView: 3.5, spaceBetween: 32 },
                 1280: { slidesPerView: 4, spaceBetween: 40 },
             },
+        });
+
+        // Custom navigation button click handlers to solve issues with freeMode + continuous autoplay
+        const nextBtns = document.querySelectorAll('.gallery-next');
+        const prevBtns = document.querySelectorAll('.gallery-prev');
+        let galleryAutoplayTimeout;
+
+        nextBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (gallerySwiper) {
+                    gallerySwiper.autoplay.stop();
+                    gallerySwiper.slideNext(600);
+                    
+                    clearTimeout(galleryAutoplayTimeout);
+                    galleryAutoplayTimeout = setTimeout(() => {
+                        gallerySwiper.autoplay.start();
+                    }, 3000);
+                }
+            });
+        });
+
+        prevBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (gallerySwiper) {
+                    gallerySwiper.autoplay.stop();
+                    gallerySwiper.slidePrev(600);
+                    
+                    clearTimeout(galleryAutoplayTimeout);
+                    galleryAutoplayTimeout = setTimeout(() => {
+                        gallerySwiper.autoplay.start();
+                    }, 3000);
+                }
+            });
         });
     }
 
@@ -509,7 +540,9 @@ const lightboxImages = [
     'assets/images/gallery/gallery1.png',
     'assets/images/gallery/gallery2.png',
     'assets/images/gallery/gallery3.png',
-    'assets/images/gallery/gallery4.png'
+    'assets/images/gallery/gallery4.png',
+    'assets/images/gallery/gallery7.png',
+    'assets/images/gallery/gallery8.png'
 ];
 let currentLightboxIndex = 0;
 
