@@ -540,9 +540,11 @@ const lightboxImages = [
     'assets/images/gallery/gallery1.png',
     'assets/images/gallery/gallery2.png',
     'assets/images/gallery/gallery3.png',
-    'assets/images/gallery/gallery4.png',
+    'assets/images/gallery/gallery4.jpeg',
+    'assets/images/gallery/gallery6.png',
     'assets/images/gallery/gallery7.png',
-    'assets/images/gallery/gallery8.png'
+    'assets/images/gallery/gallery8.png',
+    'assets/images/gallery/gallery9.png'
 ];
 let currentLightboxIndex = 0;
 
