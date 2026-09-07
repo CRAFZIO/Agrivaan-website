@@ -544,9 +544,18 @@ const lightboxImages = [
     'assets/images/gallery/gallery6.png',
     'assets/images/gallery/gallery7.png',
     'assets/images/gallery/gallery8.png',
-    'assets/images/gallery/gallery9.png'
+    'assets/images/gallery/gallery9.png',
+    'assets/images/gallery/gallery10.png',
+    'assets/images/gallery/gallery11.png'
 ];
 let currentLightboxIndex = 0;
+
+const updateLightboxCounter = () => {
+    const counter = document.getElementById('lightbox-counter');
+    if (counter) {
+        counter.textContent = `${currentLightboxIndex + 1} / ${lightboxImages.length}`;
+    }
+};
 
 window.openLightbox = (src, index) => {
     const lightbox = document.getElementById('lightbox');
@@ -556,6 +565,8 @@ window.openLightbox = (src, index) => {
 
     currentLightboxIndex = index;
     lightboxImg.src = src;
+    updateLightboxCounter();
+
     lightbox.classList.remove('opacity-0', 'pointer-events-none');
     setTimeout(() => {
         lightboxContent.classList.remove('scale-95');
@@ -576,7 +587,7 @@ window.closeLightbox = () => {
         lightbox.classList.add('opacity-0', 'pointer-events-none');
         lightboxImg.src = '';
     }, 300);
-    document.body.style.overflow = 'auto';
+    document.body.style.overflow = '';
 };
 
 window.prevLightboxImage = (e) => {
@@ -595,11 +606,11 @@ const updateLightboxImage = () => {
     const lightboxImg = document.getElementById('lightbox-img');
     if (!lightboxImg) return;
     lightboxImg.style.opacity = '0';
-    lightboxImg.style.transition = 'opacity 0.2s';
     setTimeout(() => {
         lightboxImg.src = lightboxImages[currentLightboxIndex];
         lightboxImg.style.opacity = '1';
-    }, 200);
+        updateLightboxCounter();
+    }, 150);
 };
 
 // Keyboard navigation for lightbox
@@ -611,3 +622,29 @@ document.addEventListener('keydown', (e) => {
         if (e.key === 'ArrowRight') nextLightboxImage();
     }
 });
+
+// Touch swipe support for mobile lightbox navigation
+let touchStartX = 0;
+let touchEndX = 0;
+
+document.addEventListener('touchstart', (e) => {
+    const lightbox = document.getElementById('lightbox');
+    if (lightbox && !lightbox.classList.contains('opacity-0')) {
+        touchStartX = e.changedTouches[0].screenX;
+    }
+}, { passive: true });
+
+document.addEventListener('touchend', (e) => {
+    const lightbox = document.getElementById('lightbox');
+    if (lightbox && !lightbox.classList.contains('opacity-0')) {
+        touchEndX = e.changedTouches[0].screenX;
+        const diff = touchStartX - touchEndX;
+        if (Math.abs(diff) > 50) {
+            if (diff > 0) {
+                nextLightboxImage();
+            } else {
+                prevLightboxImage();
+            }
+        }
+    }
+}, { passive: true });
